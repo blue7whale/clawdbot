@@ -1,43 +1,37 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import sys
-import os
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "app"))
-
+from contextlib import asynccontextmanager
 from app.api.endpoints import router
+from app.services.database import init_db
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
 
 app = FastAPI(
     title="Clawdbot API",
-    description="Sistema de gestión contable para PYME",
+    description="Gestión contable para PYME",
     version="1.0.0",
+    lifespan=lifespan,
 )
-
-# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "http://localhost:5173"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
-
-# Incluir endpoints
 app.include_router(router, prefix="/api")
 
 
-# Endpoint raíz
 @app.get("/")
 def root():
-    return {
-        "mensaje": "🤖 Clawdbot API - Gestoría Virtual para PYME",
-        "version": "1.0.0",
-        "estado": "activo",
-        "docs": "/docs",
-    }
+    return {"mensaje": "🤖 Clawdbot API", "version": "1.0.0", "estado": "activo"}
 
 
-# Health check
 @app.get("/health")
 def health_check():
     return {"estado": "ok"}

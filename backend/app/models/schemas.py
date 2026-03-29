@@ -3,13 +3,16 @@ from typing import Optional, List
 from datetime import datetime, date
 
 
-# Empresa
 class EmpresaBase(BaseModel):
     nombre: str
     nif: str
     direccion: Optional[str] = None
     telefono: Optional[str] = None
     email: Optional[str] = None
+
+
+class EmpresaCreate(EmpresaBase):
+    pass
 
 
 class Empresa(EmpresaBase):
@@ -20,7 +23,6 @@ class Empresa(EmpresaBase):
         from_attributes = True
 
 
-# Factura
 class FacturaBase(BaseModel):
     numero: str
     tipo: str
@@ -34,15 +36,19 @@ class FacturaBase(BaseModel):
     estado: str = "pendiente"
 
 
+class FacturaCreate(FacturaBase):
+    empresa_id: Optional[int] = None
+
+
 class Factura(FacturaBase):
     id: int
     iva_importe: float
+    empresa_id: Optional[int] = None
 
     class Config:
         from_attributes = True
 
 
-# Tarea
 class TareaBase(BaseModel):
     titulo: str
     descripcion: Optional[str] = None
@@ -50,6 +56,10 @@ class TareaBase(BaseModel):
     fecha_vencimiento: date
     prioridad: str
     completada: bool = False
+
+
+class TareaCreate(TareaBase):
+    pass
 
 
 class Tarea(TareaBase):
@@ -60,13 +70,17 @@ class Tarea(TareaBase):
         from_attributes = True
 
 
-# Contacto
 class ContactoBase(BaseModel):
     tipo: str
     nombre: str
     nif: Optional[str] = None
+    direccion: Optional[str] = None
     telefono: Optional[str] = None
     email: Optional[str] = None
+
+
+class ContactoCreate(ContactoBase):
+    pass
 
 
 class Contacto(ContactoBase):
